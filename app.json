@@ -21,6 +21,7 @@
     },
     "android": {
       "package": "com.reactnative.findcarowner",
+      "googleServicesFile": "./android/app/google-services.json",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

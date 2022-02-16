@@ -31,10 +31,9 @@
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
     "react-native-button": "^3.0.1",
-    "react-native-camera-hooks": "^0.5.3",
+    "react-native-camera": "^4.2.1",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-image-picker": "^4.7.1",
-    "react-native-openalpr": "^2.2.0",
     "react-native-paper": "^4.11.1",
     "react-native-permissions": "^3.2.0",
     "react-native-phone-number-input": "^2.1.0",
@@ -46,5 +45,6 @@
   "devDependencies": {
     "@babel/core": "^7.12.9"
   },
-  "private": true
+  "private": true,
+  "build": "react-scripts --max_old_space_size=4096 build"
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     View,
     Text,
@@ -17,30 +17,65 @@ import Carousel from "../../component/Carousel";
 import {dummyData} from "../../data/Data";
 import {RoundedButton} from "../Components/RoundedButton";
 import {AntDesign} from "@expo/vector-icons";
+
 const {width, height} = Dimensions.get('window')
 import {TextInput} from 'react-native-paper';
+
+
+// Notifications.setNotificationHandler({
+//     handleNotification: async () => ({
+//         shouldShowAlert: true,
+//         shouldPlaySound: true,
+//         shouldSetBadge: true,
+//     }),
+// });
+
+
 const HomeScreen = ({navigation}) => {
-    const [carplatnumber , setCarPlatNumber] = useState('');
+    const [carplatnumber, setCarPlatNumber] = useState('');
     const [userIdRole, setUserIdRole] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const notificationListener = useRef();
+    const responseListener = useRef();
 
     useEffect(() => {
         readData()
     }, []);
 
     // Get Notification On Click
-    useEffect(() => {
-        // registerForPushNotificationsAsync();
-        Notifications.addNotificationReceivedListener(handleNotification);
+    // useEffect(() => {
+    //     // registerForPushNotificationsAsync();
+    //     Notifications.addNotificationReceivedListener(handleNotification);
+    //
+    //     Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+    // }, []);
 
-        Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+        // This listener is fired whenever a notification is received while the app is foregrounded
+        Notifications.addNotificationReceivedListener(notification => {
+            // setNotification(notification);
+            console.log(notification + "aayayyayyya");
+            handleNotification();
+        });
+
+
+
+        // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+        Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response + "ninininini");
+            handleNotificationResponse();
+        });
     }, []);
 
     const handleNotification = notification => {
         // this.setState({ notification: notification });
-        console.log('here '+ notification);
+        console.log('here ' + notification);
     };
 
     const handleNotificationResponse = response => {
@@ -74,18 +109,19 @@ const HomeScreen = ({navigation}) => {
     async function registerForPushNotificationsAsync() {
         let token;
         if (Constants.isDevice) {
-            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            const {status: existingStatus} = await Notifications.getPermissionsAsync();
             let finalStatus = existingStatus;
             if (existingStatus !== 'granted') {
-                const { status } = await Notifications.requestPermissionsAsync();
+                const {status} = await Notifications.requestPermissionsAsync();
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
                 alert('Failed to get push token for push notification!');
                 return;
             }
-            token = (await Notifications.getExpoPushTokenAsync()).data;
-            console.log(token);
+            token = (await Notifications.getDevicePushTokenAsync()).data;
+            console.log(token + "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+            return token;
         } else {
             alert('Must use physical device for Push Notifications');
         }
@@ -101,11 +137,78 @@ const HomeScreen = ({navigation}) => {
 
         return token;
     }
+    async function sendPushNotification() {
+        console.log("send notification")
+        // const message = {
+        //     to: 'cZxPu48FQGmGyWtrvqes7K:APA91bFLV2NhfQB2aHa1tSK_UbN2XEhN6YyQ0vwwQWx2Jot-MBT34u-5dtcMfPw4s-Ip8q8fYlugjJZ59_vNw2u4Pd7E8BDfa-4fFn3HvNDlBeYIuKFEVpHpM9Z0PMQqTEJZLn_g1425',
+        //     sound: 'default',
+        //     title: "\uD83D\uDCE7 Urgent! Urgent! Urgent! Urgent! Urgent! Second user",
+        //     body: "jajajaja",
+        //     data: { second_user_id: 'seconduserId' , user_id: 'userId'},
+        //     priority: 'high', //to make sure notification is delivered as fast as possible. see documentation for more details
+        // };
 
+        // await fetch('https://exp.host/--/api/v2/push/send', {
+        //     method: 'POST',
+        //     headers: {
+        //         Accept: 'application/json',
+        //         'Accept-encoding': 'gzip, deflate',
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(message),
+        // });
+        await fetch('https://fcm.googleapis.com/fcm/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'key=AAAA8hOJMrs:APA91bGmRkxhvQsMBiSWu8l33W9vA97PSqebtHo4xUIrpy440bNoI98PZ_jfRMzZqK5vW9pY_wuzI25xA4Dkckjae1C0ALwGBbJD50McIt58G3TwKz8SANcpsRo7yC-B5jNVZC5MtB31',
+            },
+            body: JSON.stringify({
+                to: 'cZxPu48FQGmGyWtrvqes7K:APA91bFLV2NhfQB2aHa1tSK_UbN2XEhN6YyQ0vwwQWx2Jot-MBT34u-5dtcMfPw4s-Ip8q8fYlugjJZ59_vNw2u4Pd7E8BDfa-4fFn3HvNDlBeYIuKFEVpHpM9Z0PMQqTEJZLn_g1425',
+                priority: 'normal',
+                data: {
+                    experienceId: '@sumit_webronix/FindCarOwners',
+                    scopeKey: '@sumit_webronix/FindCarOwners',
+                    title: "\uD83D\uDCE7 You've got mail",
+                    message: 'Hello world! \uD83C\uDF10',
+                },
+            }),
+        });
+    }
+    const send = () => {
+        console.log('l')
+        let dataToSend = {user_id: "id"};
+        let formBody = [];
+        for (let key in dataToSend) {
+            let encodedKey = encodeURIComponent(key);
+            let encodedValue = encodeURIComponent(dataToSend[key]);
+            formBody.push(encodedKey + '=' + encodedValue);
+        }
+        formBody = formBody.join('&');
+        fetch('http://car.webronix.com/api/auth/send_notification', {
+            method: 'POST',
+            body: formBody,
+            headers: {
+                //Header Defination
+                'Content-Type':
+                    'application/x-www-form-urlencoded;charset=UTF-8',
+                'Accept': 'application/json'
+            },
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                if (responseJson.success === true) {
+                    console.log(responseJson + "notification");
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
     const onsubmitCarPlat = () => {
         if (!carplatnumber) {
             setErrorMessage("Please Enter Plat Number!")
-            // alert('Please fill car plat number');
+            alert('Please fill car plat number');
             return;
         }
         let dataToSend = {carplatnumber: carplatnumber, user_id: userIdRole};
@@ -133,19 +236,23 @@ const HomeScreen = ({navigation}) => {
                 setErrorMessage("");
                 if (responseJson.success === true) {
                     console.log(responseJson.CarCount + "count");
-                    if(responseJson.CarCount === "multi"){
-                        navigation.navigate('CarListScreen', {
-                            CarUserData: responseJson.car_owner_details
+                    if (responseJson.CountData === "data") {
+                        navigation.navigate('PingScreen', {
+                            CarIssueDetails: responseJson.CarIssue
                         });
-                    }else if(responseJson.CarCount === "single"){
-                        navigation.navigate('IssuesOptionScreen', {
-                            CarUserData: responseJson.car_owner_details[0]
-                        });
-
-                    }else{
-                        navigation.navigate('Home');
+                    } else {
+                        if (responseJson.CarCount === "multi") {
+                            navigation.navigate('CarListScreen', {
+                                CarUserData: responseJson.car_owner_details
+                            });
+                        } else if (responseJson.CarCount === "single") {
+                            navigation.navigate('IssuesOptionScreen', {
+                                CarUserData: responseJson.car_owner_details[0]
+                            });
+                        } else {
+                            navigation.navigate('Home');
+                        }
                     }
-
                 }
             })
             .catch((error) => {
@@ -208,52 +315,53 @@ const HomeScreen = ({navigation}) => {
         navigation.navigate('SecondUserNotification');
     }
     return (
-            <SafeAreaView style={styles.container}>
-                <View>
-                    <View style={styles.containerFab}>
-                        <FAB
-                            style={styles.fab}
-                            large
-                            icon={"star"}
-                            color="#fff"
-                            onPress={buttonProfilePage}
-                        />
-                    </View>
-                    <Carousel data={dummyData}/>
-
-                    <RoundedButton
-                        style={styles.addSubject}
-                        size={80}
+        <SafeAreaView style={styles.container}>
+            <View>
+                <View style={styles.containerFab}>
+                    <FAB
+                        style={styles.fab}
+                        large
+                        icon={"star"}
+                        color="#fff"
+                        onPress={buttonProfilePage}
                     />
-
-                    <Text style={styles.titleOr}>OR</Text>
-                    <View style={styles.TextInputContainer}>
-
-                        <TextInput
-                            style={styles.textinputBox}
-                            onChangeText={setCarPlatNumber}
-                            value={carplatnumber}
-                            autoCapitalize='characters'
-                            underlineColorAndroid='transparent'
-                            label="Plat Number"
-                            keyboardType={"default"}
-                            theme={{ colors: { text: "#000" } }}
-                            underlineColor={"#000"}
-                            placeholderTextColor={"#000"}
-                        />
-                        {/*{errorMessage && <Text style={{color: "red"}}> {errorMessage} </Text>}*/}
-                    </View>
-
-
-                    <View style={styles.ContainerSubmit}>
-
-                        <TouchableOpacity onPress={() => onsubmitCarPlat()}
-                            style={styles.SubmitButton}>
-                            <AntDesign style={{marginLeft: 20}} name="arrowright" size={40} color="white" />
-                        </TouchableOpacity>
-                    </View>
                 </View>
-            </SafeAreaView>
+                <Carousel data={dummyData}/>
+
+                <RoundedButton
+                    style={styles.addSubject}
+                    onPress={send}
+                    size={80}
+                />
+
+                <Text style={styles.titleOr}>OR</Text>
+                <View style={styles.TextInputContainer}>
+
+                    <TextInput
+                        style={styles.textinputBox}
+                        onChangeText={setCarPlatNumber}
+                        value={carplatnumber}
+                        autoCapitalize='characters'
+                        underlineColorAndroid='transparent'
+                        label="Plat Number"
+                        keyboardType={"default"}
+                        theme={{colors: {text: "#000"}}}
+                        underlineColor={"#000"}
+                        placeholderTextColor={"#000"}
+                    />
+                    {/*{errorMessage && <Text style={{color: "red"}}> {errorMessage} </Text>}*/}
+                </View>
+
+
+                <View style={styles.ContainerSubmit}>
+
+                    <TouchableOpacity onPress={() => onsubmitCarPlat()}
+                                      style={styles.SubmitButton}>
+                        <AntDesign style={{marginLeft: 20}} name="arrowright" size={40} color="white"/>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </SafeAreaView>
     )
     // return (
     //     <SafeAreaView style={{flex: 1}}>

@@ -52,6 +52,9 @@ const IssuesOptionScreen = ({route, navigation}) => {
 // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.dev/notifications
     async function sendPushNotification() {
         console.log("send notification")
+        console.log("seconduserId" + seconduserId)
+        console.log("send userId" + userId)
+        console.log("send checked" + checked)
         const message = {
             to: expoPushToken,
             sound: 'default',
@@ -76,7 +79,7 @@ const IssuesOptionScreen = ({route, navigation}) => {
         console.log(userId);
         console.log(description);
         console.log("seconduserId");
-        // sendPushNotification();
+        sendPushNotification();
         let dataToSend = {options: checked, user_id: userId, description: description, seconduserId: seconduserId};
         let formBody = [];
         for (let key in dataToSend) {
@@ -102,7 +105,8 @@ const IssuesOptionScreen = ({route, navigation}) => {
                 console.log(responseJson);
                 if (responseJson.success === true) {
                     navigation.navigate('PingScreen', {
-                        CarIssueDetails: responseJson.car_issue_update
+                        CarIssueDetails: responseJson.car_issue_update,
+                        UserToken: expoPushToken
                     });
                     // navigation.navigate('Ping');
                 }
@@ -114,7 +118,7 @@ const IssuesOptionScreen = ({route, navigation}) => {
             });
     };
     return (
-            <SafeAreaView>
+            <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
                     <Loader loading={loading}/>
                     <Image

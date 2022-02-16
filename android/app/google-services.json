@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "962728120563",
+    "project_id": "findcarowners-341212",
+    "storage_bucket": "findcarowners-341212.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:962728120563:android:1644f506830158bd996786",
+        "android_client_info": {
+          "package_name": "com.reactnative.findcarowner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "962728120563-iomdt0f26k0rnd265ocvfufps3743bdd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrfaEmbBvuwHhS9gUkjMEH0c5nYHNLlaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "962728120563-iomdt0f26k0rnd265ocvfufps3743bdd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -16,7 +16,9 @@ const ProfilePage = ({navigation}) => {
     const ProfileUpdateButton = () => {
         navigation.navigate('ProfileUpdate');
     };
-
+    const Notification = () => {
+        navigation.navigate('SecondUserNotificationScreen');
+    };
 
     if (!mounted) {
         AsyncStorage.getItem("userData").then((value) => {
@@ -43,6 +45,14 @@ const ProfilePage = ({navigation}) => {
                 onPress={ProfileUpdateButton}>
                 <Text style={styles.buttonTextStyle}>Profile Update</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+                style={styles.buttonStyle}
+                activeOpacity={0.5}
+                onPress={Notification}>
+                <Text style={styles.buttonTextStyle}>Notification</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
                 style={styles.buttonStyle}
                 activeOpacity={0.5}
