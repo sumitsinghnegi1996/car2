@@ -21,14 +21,13 @@ import {AntDesign} from "@expo/vector-icons";
 const {width, height} = Dimensions.get('window')
 import {TextInput} from 'react-native-paper';
 
-
-// Notifications.setNotificationHandler({
-//     handleNotification: async () => ({
-//         shouldShowAlert: true,
-//         shouldPlaySound: true,
-//         shouldSetBadge: true,
-//     }),
-// });
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false
+    })
+});
 
 
 const HomeScreen = ({navigation}) => {
@@ -137,8 +136,25 @@ const HomeScreen = ({navigation}) => {
 
         return token;
     }
+    export const sendPushNotifications = () =>
+        getWeatherData('Barcelona').then((cityData) => {
+            const expoPushMessages: ExpoPushMessage[] = pushTokens.map((pushToken) => ({
+                body: `${cityData.temperature} ºC`,
+                data: cityData,
+                title: `Barcelona is ${cityData.weatherName} today`,
+                to: pushToken
+            }));
+
+            const expo = new Expo();
+            return expo.sendPushNotificationsAsync(expoPushMessages);
+            /* Note that expo.sendPushNotificationsAsync will not send the push notifications
+             * to the user immediately but will send the information to Expo notifications
+             * service instead, which will later send the notifications to the users */
+        });
     async function sendPushNotification() {
         console.log("send notification")
+
+
         // const message = {
         //     to: 'cZxPu48FQGmGyWtrvqes7K:APA91bFLV2NhfQB2aHa1tSK_UbN2XEhN6YyQ0vwwQWx2Jot-MBT34u-5dtcMfPw4s-Ip8q8fYlugjJZ59_vNw2u4Pd7E8BDfa-4fFn3HvNDlBeYIuKFEVpHpM9Z0PMQqTEJZLn_g1425',
         //     sound: 'default',
@@ -157,23 +173,23 @@ const HomeScreen = ({navigation}) => {
         //     },
         //     body: JSON.stringify(message),
         // });
-        await fetch('https://fcm.googleapis.com/fcm/send', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'key=AAAA8hOJMrs:APA91bGmRkxhvQsMBiSWu8l33W9vA97PSqebtHo4xUIrpy440bNoI98PZ_jfRMzZqK5vW9pY_wuzI25xA4Dkckjae1C0ALwGBbJD50McIt58G3TwKz8SANcpsRo7yC-B5jNVZC5MtB31',
-            },
-            body: JSON.stringify({
-                to: 'cZxPu48FQGmGyWtrvqes7K:APA91bFLV2NhfQB2aHa1tSK_UbN2XEhN6YyQ0vwwQWx2Jot-MBT34u-5dtcMfPw4s-Ip8q8fYlugjJZ59_vNw2u4Pd7E8BDfa-4fFn3HvNDlBeYIuKFEVpHpM9Z0PMQqTEJZLn_g1425',
-                priority: 'normal',
-                data: {
-                    experienceId: '@sumit_webronix/FindCarOwners',
-                    scopeKey: '@sumit_webronix/FindCarOwners',
-                    title: "\uD83D\uDCE7 You've got mail",
-                    message: 'Hello world! \uD83C\uDF10',
-                },
-            }),
-        });
+        // await fetch('https://fcm.googleapis.com/fcm/send', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         Authorization: 'key=AAAA8hOJMrs:APA91bGmRkxhvQsMBiSWu8l33W9vA97PSqebtHo4xUIrpy440bNoI98PZ_jfRMzZqK5vW9pY_wuzI25xA4Dkckjae1C0ALwGBbJD50McIt58G3TwKz8SANcpsRo7yC-B5jNVZC5MtB31',
+        //     },
+        //     body: JSON.stringify({
+        //         to: 'cZxPu48FQGmGyWtrvqes7K:APA91bFLV2NhfQB2aHa1tSK_UbN2XEhN6YyQ0vwwQWx2Jot-MBT34u-5dtcMfPw4s-Ip8q8fYlugjJZ59_vNw2u4Pd7E8BDfa-4fFn3HvNDlBeYIuKFEVpHpM9Z0PMQqTEJZLn_g1425',
+        //         priority: 'normal',
+        //         data: {
+        //             experienceId: '@sumit_webronix/FindCarOwners',
+        //             scopeKey: '@sumit_webronix/FindCarOwners',
+        //             title: "\uD83D\uDCE7 You've got mail",
+        //             message: 'Hello world! \uD83C\uDF10',
+        //         },
+        //     }),
+        // });
     }
     const send = () => {
         console.log('l')
@@ -352,7 +368,22 @@ const HomeScreen = ({navigation}) => {
                     {/*{errorMessage && <Text style={{color: "red"}}> {errorMessage} </Text>}*/}
                 </View>
 
-
+                             <TouchableOpacity
+                                onPress={() => Notification()}>
+                                <Text>Notification</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => Entry()}>
+                                <Text>Entry</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => Ping()}>
+                                <Text>Ping</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => SecondUserNotification()}>
+                                <Text>SecondUserNotification</Text>
+                            </TouchableOpacity>
                 <View style={styles.ContainerSubmit}>
 
                     <TouchableOpacity onPress={() => onsubmitCarPlat()}
